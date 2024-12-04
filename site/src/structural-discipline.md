@@ -26,7 +26,7 @@ When declaring a module `foo` which comprises multiple files, Rust allows two di
 
 Firstly, all files can be grouped into a single directory containing a `mod.rs`—
 
-```
+```ignore
 foo/
 ├── mod.rs
 ├── file_in_foo.rs
@@ -35,7 +35,7 @@ foo/
 
 Secondly, all files can be grouped into a single directory, except for the module root which is stored next to the directory and shares its name—
 
-```
+```ignore
 foo.rs
 foo/
 ├── file_in_foo.rs
@@ -53,4 +53,3 @@ In library crates, the `Error` type should be defined in the crate-root, `lib.rs
 The custom `Result` type alias, `type Result<T> = std::result::Result<T, Error>` must be immediately below `Error`.
 
 In binary crates, the `Error` type should be defined `error.rs` and the `Result` alias in `result.rs`, both in the crate’s root directory.
-

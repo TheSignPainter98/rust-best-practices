@@ -16,6 +16,8 @@ There are no hard and fast rules for this strong association, but the following 
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# fn main() -> Result<ArbitraryValue> {
 let x = foo();
 if !x.is_valid() {
     return Err(Error::Invalid);
@@ -27,11 +29,15 @@ if !y.is_valid() {
     return Err(Error::Invalid);
 }
 return Ok(y);
+# Ok(ArbitraryValue)
+# }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
+{{#include prelude.rs}}
+# fn main() -> Result<ArbitraryValue> {
 let x = foo();
 
 if !x.is_valid() {
@@ -45,6 +51,8 @@ if !y.is_valid() {
 }
 
 return Ok(y);
+# Ok(ArbitraryValue)
+# }
 ```
 
 ## Grouping
@@ -64,6 +72,8 @@ _The following snippets assume that functions `foo`, `bar` and `baz` are free of
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# fn main() -> Result<()> {
 let x = foo();
 let b = baz();
 if !b.is_valid() {
@@ -75,14 +85,18 @@ let y = bar();
 if !y.is_valid() {
     return Err(Error::Invalid)
 }
+# Ok(())
+# }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
-let x = foo()
-let check = |x| {
-    if !x.valid() {
+{{#include prelude.rs}}
+# fn main() -> Result<()> {
+let x = foo();
+let check = |x: SomeType| {
+    if !x.is_valid() {
         return Err(Error::Invalid)
     }
     Ok(x)
@@ -90,6 +104,8 @@ let check = |x| {
 let y = bar();
 let z = x + check(baz())?;
 check(y)?;
+# Ok(())
+# }
 ```
 
 ## Hex values

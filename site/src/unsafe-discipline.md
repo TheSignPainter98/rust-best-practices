@@ -25,4 +25,3 @@ Rust is an extremely fast language anyway.
 Both `unsafe` functions and `unsafe` blocks must document their preconditions in a comment with the prefix `// SAFETY: `.
 If something goes wrong in future, this will help the future maintainer understand which conditions have been violated.
 These comments must be carefully maintained and updated as changes are made.
-

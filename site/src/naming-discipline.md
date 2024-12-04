@@ -50,37 +50,77 @@ When matching structs and struct-like enum variants, try to use the original fie
 ✅ Do this:
 
 ```rust
-if let Some(response) = response { ... }
-if let Some(response) = event.response { ... }
-if let Some(event_response) = event.response { ... }
+# let response = Some(());
+# struct Event { response: Option<()> }
+# let event = Event { response: None };
+if let Some(response) = response { /* ... */ }
+if let Some(response) = event.response { /* ... */ }
+if let Some(event_response) = event.response { /* ... */ }
 
+# struct MyStruct {
+#     name: (),
+#     path: (),
+# }
+# impl MyStruct {
+# fn foo(self) {
 let Self { name, path } = self;
+# }
+# }
 
+# use std::fs;
+# struct Workload;
 enum State {
     Reading(fs::File),
     Evaluating {
         workload: Workload,
-        ...
-    }
+        /* ... */
+#       other_field: (),
+    },
+#   Arbitrary,
 }
+# let state = State::Arbitrary;
 match state {
-    State::Reading(file) => {...}
-    State::Evaluating{ workload, .. } => {...}
+    State::Reading(file) => { /* ... */ }
+    State::Evaluating{ workload, .. } => { /* ... */ }
+#   State::Arbitrary => {}
 }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
-if let Some(r) = response { ... }
-if let Some(r) = event.response { ... }
-if let Some(er) = event.response { ... }
+# let response = Some(());
+# struct Event { response: Option<()> }
+# let event = Event { response: None };
+if let Some(r) = response { /* ... */ }
+if let Some(r) = event.response { /* ... */ }
+if let Some(er) = event.response { /* ... */ }
 
+# struct MyStruct {
+#     name: (),
+#     path: (),
+# }
+# impl MyStruct {
+# fn foo(self) {
 let Self { name: some_name, path: name } = self;
+# }
+# }
 
+# struct Workload;
+# enum State {
+#     Reading(std::fs::File),
+#     Evaluating {
+#         workload: Workload,
+#         /* ... */
+#         other_field: (),
+#     },
+#     Arbitrary,
+# }
+# let state = State::Arbitrary;
 match state {
-    State::Reading(data_source) => {...}
-    State::Evaluating{ workload: to_eval, .. } => {...}
+    State::Reading(data_source) => { /* ... */ }
+    State::Evaluating{ workload: to_eval, .. } => { /* ... */ }
+#   State::Arbitrary => {}
 }
 ```
 
@@ -108,17 +148,31 @@ Single-letter lifetime names should generally be avoided.
 ✅ Do this:
 
 ```rust
-struct ASTQueryMatch<'cursor, 'tree> { .. }
+struct ASTQueryMatch<'cursor, 'tree> {
+    /* ... */
+#   cursor: &'cursor (),
+#   tree: &'tree (),
+}
 
-struct Value<'h> { .. }
+struct Value<'h> {
+    /* ... */
+#   h: &'h (),
+}
 ```
 
 ⚠️ Avoid this:
 
 ```rust
-struct ASTQueryMatch<'a, 'b> { .. }
+struct ASTQueryMatch<'a, 'b> {
+    /* ... */
+#   a: &'a (),
+#   b: &'b (),
+}
 
-struct Value<'value> { .. }
+struct Value<'value> {
+    /* ... */
+#   value: &'value (),
+}
 ```
 
 ## Builder naming
@@ -129,10 +183,21 @@ This `MyTypeBuilder` must also have a fallible `.build()` method, which returns 
 Typical usage is hence—
 
 ```rust
+{{#include prelude.rs}}
+# struct Foo;
+# impl Foo {
+#     fn builder() -> Self { Self }
+#     fn bar(self, _: ()) -> Self { self }
+#     fn build(self) -> Result<Self> { Ok(self) }
+# }
+# fn snippet() -> Result<()> {
+# let bar = ();
 let foo = Foo::builder()
     .bar(bar)
     // ...
     .build()?;
+# Ok(())
+# }
 ```
 
 [dictionary]: https://www.dictionary.com/

@@ -19,26 +19,42 @@ Therefore, do-nothing `match` branches should be written as `.. => {}` rather th
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# struct Foo { foo_type: FooType }
+# enum FooType { A }
+# impl Foo {
 fn setup_foo(&self) -> Result<()> {
     match self.foo_type {
         FooType::A => {}
-        ...
+        // ...
     }
     self.setup_bar()?;
     Ok(())
 }
+# fn setup_bar(&self) -> Result<()> {
+#     Ok(())
+# }
+# }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
+{{#include prelude.rs}}
+# struct Foo { foo_type: FooType }
+# enum FooType { A }
+# impl Foo {
 fn setup_foo(&self) -> Result<()> {
     match self.foo_type {
         FooType::A => ()
-        ...
+        // ...
     }
     self.setup_bar()
 }
+# fn setup_bar(&self) -> Result<()> {
+#     Ok(())
+# }
+# }
 ```
 
 ## Hide generic type parameters
@@ -59,13 +75,25 @@ If a lifetime is present, _always_ communicate that fact (i.e. always prefer `My
 ✅ Do this:
 
 ```rust
-fn transmit(tx: impl Transmitter<'_>, message: &[u8]) -> Result<()> { ... }
+{{#include prelude.rs}}
+# struct Transmitter<'a>(&'a str);
+# trait Message {}
+fn transmit(tx: Transmitter<'_>, message: impl Message) -> Result<()> {
+    /* ... */
+# Ok(())
+}
 ```
 
 ⚠️ Avoid this:
 
 ```rust
-fn transmit<'a, T: Transmitter<’a>>(tx: T, message: &[u8]) -> Result<()> { ... }
+{{#include prelude.rs}}
+# struct Transmitter<'a>(&'a str);
+# trait Message {}
+fn transmit<'tx, M: Message>(tx: Transmitter<'tx>, message: M) -> Result<()> {
+    /* ... */
+# Ok(())
+}
 ```
 
 ## Unused parameters in default implementations
@@ -80,10 +108,12 @@ Similarly, we could individually annotate each unused parameter, however this wo
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# struct Value<'v>(&'v str);
 trait CustomScriptValue<'v> {
     fn at(&self, index: Value<'v>) -> Result<Value<'v>> {
         let _ = index;
-        Err(Error::Unsupported { .. })
+        Err(Error::Unsupported )
     }
 }
 ```
@@ -91,16 +121,20 @@ trait CustomScriptValue<'v> {
 ⚠️ Avoid this:
 
 ```rust
+{{#include prelude.rs}}
+# struct Value<'v>(&'v str);
 trait CustomScriptValue<'v> {
     fn at(&self, _index: Value<'v>) -> Result<Value<'v>> {
-        Err(Error::Unsupported { .. })
+        Err(Error::Unsupported)
     }
+# }
 
     // OR
 
+# trait CustomScriptValue2<'v> {
     #[allow(unused_variables)]
     fn at(&self, index: Value<'v>) -> Result<Value<'v>> {
-        Err(Error::Unsupported { .. })
+        Err(Error::Unsupported)
     }
 }
 ```
@@ -112,10 +146,10 @@ In typical usage, users of `MyType` shouldn’t need to import `MyTypeBuilder`, 
 
 ✅ Do this:
 
-```rust
-use crate::Foo;
+```rust,ignore
+use crate::MyType;
 
-let foo = Foo::builder()
+let foo = MyType::builder()
     .bar(bar)
     // ...
     .build()?;
@@ -123,10 +157,10 @@ let foo = Foo::builder()
 
 ⚠️ Avoid this:
 
-```rust
-use crate::{Foo, FooBuilder}
+```rust,ignore
+use crate::{MyType, MyTypeBuilder};
 
-let foo = FooBuilder::new()
+let foo = MyTypeBuilder::new()
     .bar(bar)
     // ...
     .build()?;
@@ -138,10 +172,14 @@ In Rust, there are two forms of the builder pattern, depending on the receiver t
 Consider the following builder—
 
 ```rust
+{{#include prelude.rs}}
+# fn main() -> Result<()> {
 let frobnicator = Frobnicator::builder()
     .foo("foo")
     .bar("bar")
     .build()?;
+# Ok(())
+# }
 ```
 
 The methods `foo`, `bar` and `build` can either take ownership of `self` or take `&mut self` by value.

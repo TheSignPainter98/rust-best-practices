@@ -9,16 +9,28 @@ After reading this first sentence, it should be clear _when_ to use the given fu
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# impl ArbitraryValue {
 /// This function reports an increase in the number of steps taken by this
 /// thread.
-fn add_steps(&self, delta: i64) -> Result<()> { .. }
+fn add_steps(&self, delta: i64) -> Result<()> {
+    /* ... */
+# Ok(())
+}
+# }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
+{{#include prelude.rs}}
+# impl ArbitraryValue {
 /// This function adds a given delta to the current step counter.
-fn add_steps(&self, delta: i64) -> Result<()> { .. }
+fn add_steps(&self, delta: i64) -> Result<()> {
+    /* ... */
+# Ok(())
+}
+# }
 ```
 
 ## Definite vs. Indefinite articles
@@ -30,14 +42,25 @@ Leave no room for ambiguity and hence misunderstanding.
 ✅ Do this:
 
 ```rust
+{{#include prelude.rs}}
+# impl ArbitraryValue {
 /// Increments this counter by the given `delta`.
-fn incr_by(&self, delta: u64) -> Result<()> { .. }
+fn incr_by(&self, delta: u64) -> Result<()> {
+    /* ... */
+# Ok(())
+}
+# }
 ```
 
 ⚠️ Avoid this:
 
 ```rust
+{{#include prelude.rs}}
+# impl ArbitraryValue {
 /// Increments a counter by a given amount.
-fn incr_by(&self, delta: u64) -> Result<()> { .. }
+fn incr_by(&self, delta: u64) -> Result<()> {
+    /* ... */
+# Ok(())
+}
+# }
 ```
-
